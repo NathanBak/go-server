@@ -28,6 +28,7 @@ func New(cfg Config) (*Server, error) {
 			WriteTimeout: cfg.WriteTimeout,
 		},
 		cfg: cfg,
+		log: cfg.Logger,
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
