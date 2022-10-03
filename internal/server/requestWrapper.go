@@ -8,7 +8,7 @@ import (
 
 // requestWrapper is a middleware function that wraps another http.Handler and logs information
 // about the request and response.
-func (s Server) requestWrapper(next http.Handler, routeName string) http.Handler {
+func (s *Server) requestWrapper(next http.Handler, routeName string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
