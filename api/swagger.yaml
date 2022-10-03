@@ -1,0 +1,86 @@
+openapi: '3.0.0'
+info:
+  title: go-server
+  description: REST API definition for example go-service
+  version: 1.0.0
+  contact:
+    name: Nathan Bak
+    url: https://github.com/NathanBak/go-server
+    
+tags:
+  - name: Health
+    description: Endpoints to advertise liveliness and readiness
+  - name: External
+    description: Endpoints used by customer devices.  JWTs are used for auth.
+      
+paths:
+  /livez:
+    get:
+      tags: [Health]
+      summary: Service Liveliness
+      description: Returns a 200 if the server is alive--intended for use by Kubernetes
+      operationId: livez
+      responses:
+        "200":
+          $ref: "#/components/responses/MessageResponse"
+        "500":
+          $ref: "#/components/responses/InternalErrorResponse"
+
+  /readyz:
+    get:
+      tags: [Health]
+      summary: Service Readiness
+      description: Returns a 200 if the server is ready--intended for use by Kubernetes
+      operationId: readyz
+      responses:
+        "200":
+          $ref: "#/components/responses/MessageResponse"
+        "500":
+          $ref: "#/components/responses/InternalErrorResponse"
+
+components:
+
+  responses:
+  
+    MessageResponse:
+      description: "success (200)"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+            
+    InternalErrorResponse:
+      description: "internal server error (500)"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+
+    MessageResponse:
+      description: MessageResponse contains a message
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: Message is the error message
+          type: string
+          example: Don't worry, be happy!
+
+    ErrorResponse:
+      description: ErrorResponse contains the error mesage and code
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          description: ErrorCode is a unique string identifying the error
+          type: string
+          example: ERR-1234567890
+        message:
+          description: Message is the error message
+          type: string
+          example: hovercraft is full of eels
