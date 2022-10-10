@@ -27,5 +27,33 @@ func (s *Server) routes() []Route {
 			Pattern:     "/readyz",
 			HandlerFunc: s.readyz,
 		},
+
+		{
+			Name:        "AddWidget",
+			Method:      http.MethodPost,
+			Pattern:     "/api/v1/widgets",
+			HandlerFunc: s.addWidget,
+		},
+
+		{
+			Name:        "DeleteWidget",
+			Method:      http.MethodDelete,
+			Pattern:     "/api/v1/widgets/{widgetId}",
+			HandlerFunc: s.widgetIDMiddleware(s.deleteWidget),
+		},
+
+		{
+			Name:        "GetWidget",
+			Method:      http.MethodGet,
+			Pattern:     "/api/v1/widgets/{widgetId}",
+			HandlerFunc: s.widgetIDMiddleware(s.getWidget),
+		},
+
+		{
+			Name:        "ListWidgets",
+			Method:      http.MethodGet,
+			Pattern:     "/api/v1/widgets",
+			HandlerFunc: s.listWidgets,
+		},
 	}
 }

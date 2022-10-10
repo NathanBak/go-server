@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -13,8 +14,9 @@ import (
 // Server.Shutdown() function.
 type Server struct {
 	http.Server
-	log Logger
-	cfg Config
+	log     Logger
+	cfg     Config
+	storage Storage
 }
 
 // New creates, configures, and returns a new server instance.
@@ -27,8 +29,13 @@ func New(cfg Config) (*Server, error) {
 			ReadTimeout:  cfg.ReadTimeout,
 			WriteTimeout: cfg.WriteTimeout,
 		},
-		cfg: cfg,
-		log: cfg.Logger,
+		cfg:     cfg,
+		log:     cfg.Logger,
+		storage: cfg.Storage,
+	}
+
+	if s.storage == nil {
+		return nil, errors.New("no storage provided in config")
 	}
 
 	router := mux.NewRouter().StrictSlash(true)

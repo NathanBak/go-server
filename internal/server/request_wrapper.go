@@ -25,12 +25,20 @@ func (s *Server) requestWrapper(next http.Handler, routeName string) http.Handle
 		)
 
 		switch {
-		case ww.status >= 500:
-			withErrInfo := fmt.Sprintf("%s %s (%s)", msg, ww.errorCode, ww.err.Error())
-			s.log.Error(withErrInfo)
 		case ww.status >= 400:
-			withErrInfo := fmt.Sprintf("%s %s (%s)", msg, ww.errorCode, ww.err.Error())
-			s.log.Warning(withErrInfo)
+			var msgWithErrInfo string
+			if ww.err == nil {
+				msgWithErrInfo = fmt.Sprintf("%s %s", msg, ww.errorCode)
+			} else {
+				msgWithErrInfo = fmt.Sprintf("%s %s (%s)", msg, ww.errorCode, ww.err.Error())
+			}
+
+			if ww.status >= 500 {
+				s.log.Error(msgWithErrInfo)
+			} else { // status >= 400
+				s.log.Warning(msgWithErrInfo)
+			}
+
 		default:
 			s.log.Info(msg)
 		}

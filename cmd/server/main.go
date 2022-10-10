@@ -10,11 +10,16 @@ import (
 	"time"
 
 	"github.com/NathanBak/go-server/internal/server"
+	"github.com/NathanBak/go-server/pkg/storage"
+	"github.com/NathanBak/go-server/pkg/widget"
 )
 
 func main() {
 
-	cfg := server.Config{IncludeStatusCodeInMessages: true}
+	cfg := server.Config{
+		IncludeStatusCodeInMessages: true,
+		Storage:                     &storage.MapStorage[widget.Widget]{},
+	}
 
 	s, err := server.New(cfg)
 	if err != nil {

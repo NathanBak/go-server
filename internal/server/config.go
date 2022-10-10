@@ -1,6 +1,10 @@
 package server
 
-import "time"
+import (
+	"time"
+
+	"github.com/NathanBak/go-server/pkg/widget"
+)
 
 const (
 	defaultPort         = 8080
@@ -10,13 +14,15 @@ const (
 
 // Config contains information necessary to set up a Server.
 type Config struct {
-	Port         int           `json:"port" mapstructure:"port"`
-	ReadTimeout  time.Duration `json:"readTimeout" mapstructure:"readtimeout"`
-	WriteTimeout time.Duration `json:"writeTimeout" mapstructure:"writetimeout"`
+	Port         int           `json:"port" mapstructure:"PORT"`
+	ReadTimeout  time.Duration `json:"readTimeout" mapstructure:"READ_TIMEOUT"`
+	WriteTimeout time.Duration `json:"writeTimeout" mapstructure:"WRITE_TIMEOUT"`
 
 	Logger Logger `json:"-" mapstructure:"-"`
 
 	IncludeStatusCodeInMessages bool `json:"-" mapstructure:"-"`
+
+	Storage Storage `json:"-" mapstructure:"-"`
 }
 
 // The Logger interface defines the methods required by the Server for logging.
@@ -25,6 +31,14 @@ type Logger interface {
 	Info(msg string)
 	Warning(msg string)
 	Error(msg string)
+}
+
+// The Storage interface defines the methods required to access backing Widget storage.
+type Storage interface {
+	Get(string) (widget.Widget, bool, error)
+	Set(string, widget.Widget) error
+	Delete(string) (widget.Widget, bool, error)
+	Keys() ([]string, error)
 }
 
 // applyDefaultValues will set certain uninitialized properties to the default.
