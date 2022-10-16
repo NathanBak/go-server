@@ -14,15 +14,15 @@ const (
 
 // Config contains information necessary to set up a Server.
 type Config struct {
-	Port         int           `json:"port" mapstructure:"PORT"`
-	ReadTimeout  time.Duration `json:"readTimeout" mapstructure:"READ_TIMEOUT"`
-	WriteTimeout time.Duration `json:"writeTimeout" mapstructure:"WRITE_TIMEOUT"`
+	Port         int           `json:"port" envvar:"PORT"`
+	ReadTimeout  time.Duration `json:"readTimeout" envvar:"READ_TIMEOUT"`
+	WriteTimeout time.Duration `json:"writeTimeout" envvar:"WRITE_TIMEOUT"`
 
-	Logger Logger `json:"-" mapstructure:"-"`
+	Logger Logger `json:"-" envvar:"-"`
 
-	IncludeStatusCodeInMessages bool `json:"-" mapstructure:"-"`
+	IncludeStatusCodeInMessages bool `json:"-" envvar:"-"`
 
-	Storage Storage `json:"-" mapstructure:"-"`
+	Storage Storage `json:"-" envvar:"-"`
 }
 
 // The Logger interface defines the methods required by the Server for logging.
@@ -41,8 +41,8 @@ type Storage interface {
 	Keys() ([]string, error)
 }
 
-// applyDefaultValues will set certain uninitialized properties to the default.
-func (c *Config) applyDefaultValues() {
+// Init implements the cfgbuild.Config interface and should only be called by a cfgbuild.Builder.
+func (c *Config) Init() error {
 	if c.Port == 0 {
 		c.Port = defaultPort
 	}
@@ -58,4 +58,6 @@ func (c *Config) applyDefaultValues() {
 	if c.Logger == nil {
 		c.Logger = defaultLogger{}
 	}
+
+	return nil
 }

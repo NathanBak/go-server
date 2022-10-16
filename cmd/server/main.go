@@ -9,6 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/NathanBak/cfgbuild"
+	"github.com/joho/godotenv"
+
 	"github.com/NathanBak/go-server/internal/server"
 	"github.com/NathanBak/go-server/pkg/storage"
 	"github.com/NathanBak/go-server/pkg/widget"
@@ -16,12 +19,19 @@ import (
 
 func main() {
 
-	cfg := server.Config{
-		IncludeStatusCodeInMessages: true,
-		Storage:                     &storage.MapStorage[widget.Widget]{},
+	_ = godotenv.Load("local.env")
+	_ = godotenv.Load()
+
+	builder := cfgbuild.Builder[*server.Config]{}
+
+	cfg, err := builder.Build()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	s, err := server.New(cfg)
+	cfg.Storage = &storage.MapStorage[widget.Widget]{}
+
+	s, err := server.New(*cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
