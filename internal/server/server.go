@@ -21,7 +21,6 @@ type Server struct {
 
 // New creates, configures, and returns a new server instance.
 func New(cfg Config) (*Server, error) {
-	cfg.applyDefaultValues()
 
 	s := &Server{
 		Server: http.Server{
