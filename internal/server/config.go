@@ -1,22 +1,17 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/NathanBak/go-server/pkg/widget"
 )
 
-const (
-	defaultPort         = 8080
-	defaultReadTimeout  = 3 * time.Second
-	defaultWriteTimeout = 3 * time.Second
-)
-
 // Config contains information necessary to set up a Server.
 type Config struct {
-	Port         int           `json:"port" envvar:"PORT"`
-	ReadTimeout  time.Duration `json:"readTimeout" envvar:"READ_TIMEOUT"`
-	WriteTimeout time.Duration `json:"writeTimeout" envvar:"WRITE_TIMEOUT"`
+	Port         int           `json:"port" envvar:"PORT,default=8080"`
+	ReadTimeout  time.Duration `json:"readTimeout" envvar:"READ_TIMEOUT,default=3s"`
+	WriteTimeout time.Duration `json:"writeTimeout" envvar:"WRITE_TIMEOUT,default=3s"`
 
 	Logger Logger `json:"-" envvar:"-"`
 
@@ -41,23 +36,18 @@ type Storage interface {
 	Keys() ([]string, error)
 }
 
-// Init implements the cfgbuild.Config interface and should only be called by a cfgbuild.Builder.
-func (c *Config) Init() error {
-	if c.Port == 0 {
-		c.Port = defaultPort
+// CfgBuildInit initializes the Logger.  It should only be called by a cfgbuild.Builder.
+func (cfg *Config) CfgBuildInit() error {
+	if cfg.Logger == nil {
+		cfg.Logger = defaultLogger{}
 	}
+	return nil
+}
 
-	if c.ReadTimeout == 0 {
-		c.ReadTimeout = defaultReadTimeout
+// CfgBuildValidate checks the specified values.  It should only be called by a cfgbuild.Builder.
+func (cfg *Config) CfgBuildValidate() error {
+	if cfg.Port < 1 || cfg.Port > 65535 {
+		return fmt.Errorf("%d is not a valid port", cfg.Port)
 	}
-
-	if c.WriteTimeout == 0 {
-		c.WriteTimeout = defaultWriteTimeout
-	}
-
-	if c.Logger == nil {
-		c.Logger = defaultLogger{}
-	}
-
 	return nil
 }
