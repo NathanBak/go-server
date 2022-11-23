@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/NathanBak/go-server/pkg/widget"
@@ -38,7 +38,7 @@ func (s *Server) widgetIDMiddleware(next widgetIDHandler) http.HandlerFunc {
 func (s *Server) addWidget(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		s.RespondWithError(r.Context(), w, r, http.StatusBadRequest,
 			WS1000001, "unable to read body", err)
@@ -58,7 +58,13 @@ func (s *Server) addWidget(w http.ResponseWriter, r *http.Request) {
 
 	wdgt := widget.New(wdgtInfo.Name, wdgtInfo.Color)
 
-	s.storage.Set(wdgt.ID.String(), wdgt)
+	err = s.storage.Set(wdgt.ID.String(), wdgt)
+	if err != nil {
+		s.RespondWithError(r.Context(), w, r, http.StatusInternalServerError,
+			WS1000010, "unable to store widget", err)
+		return
+
+	}
 
 	s.RespondWithJSON(ctx, w, http.StatusOK, &wdgt)
 }

@@ -29,7 +29,10 @@ func (s *Server) RespondWithJSON(ctx context.Context, w http.ResponseWriter, htt
 	if body == nil {
 		// return an empty json object if there is no body
 		w.WriteHeader(httpStatus)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			s.log.Error(err.Error())
+		}
 		return
 	}
 
@@ -39,12 +42,18 @@ func (s *Server) RespondWithJSON(ctx context.Context, w http.ResponseWriter, htt
 		s.log.Error("unable to marshal response")
 		w.WriteHeader(http.StatusInternalServerError)
 		// hardcoded json string since marshaling might be broken
-		w.Write([]byte(`{ "errorCode": "12345", "errorMessage": "unable to marshal response" }`))
+		_, writeErr := w.Write([]byte(`{ "errorCode": "12345", "errorMessage": "unable to marshal response" }`))
+		if writeErr != nil {
+			s.log.Error(writeErr.Error())
+		}
 		return
 	}
 
 	w.WriteHeader(httpStatus)
-	w.Write(bytes)
+	_, err = w.Write(bytes)
+	if err != nil {
+		s.log.Error(err.Error())
+	}
 }
 
 func (s *Server) RespondWithError(ctx context.Context, w http.ResponseWriter, r *http.Request,

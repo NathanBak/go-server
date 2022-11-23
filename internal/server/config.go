@@ -9,7 +9,7 @@ import (
 
 // Config contains information necessary to set up a Server.
 type Config struct {
-	Port         int           `json:"port" envvar:"PORT,default=8080"`
+	Port         int           `json:"port" envvar:"PORT,required"`
 	ReadTimeout  time.Duration `json:"readTimeout" envvar:"READ_TIMEOUT,default=3s"`
 	WriteTimeout time.Duration `json:"writeTimeout" envvar:"WRITE_TIMEOUT,default=3s"`
 

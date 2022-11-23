@@ -51,6 +51,12 @@ func New(cfg Config) (*Server, error) {
 	return s, nil
 }
 
+func (s *Server) ListenAndServe() error {
+	msg := fmt.Sprintf("Starting server on port %d", s.cfg.Port)
+	s.log.Info(msg)
+	return s.Server.ListenAndServe()
+}
+
 // ServeHttp routes and handles a request.  It is typically used for testing purposes.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.Handler.ServeHTTP(w, r)
@@ -58,5 +64,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Shutdown cleanly shutsdown the server and blocks until complete (or timing out).
 func (s *Server) Shutdown(ctx context.Context) error {
+	msg := "Shutting down server"
+	s.log.Info(msg)
 	return s.Server.Shutdown(ctx)
 }

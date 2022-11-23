@@ -18,12 +18,11 @@ import (
 )
 
 func main() {
-
-	_ = godotenv.Load("local.env")
+	// read .env file and set env vars
 	_ = godotenv.Load()
 
+	// create and initialize config from env vars
 	builder := cfgbuild.Builder[*server.Config]{}
-
 	cfg, err := builder.Build()
 	if err != nil {
 		log.Fatal(err)
